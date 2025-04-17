@@ -154,3 +154,11 @@ String passwordStr = "你的MQTT密码";
 ·若使用的是不同的开发板，可能需要调整引脚定义。
 
 ·要确保阿里云 IoT 平台的设备配置与代码中的配置一致。
+
+九、最终效果
+
+![image](https://github.com/user-attachments/assets/87d4e997-258c-42d8-94d4-e0cee2fc98f6)
+
+![996eace5571f4a2670f595187a7b38f](https://github.com/user-attachments/assets/5d370783-b648-4e9e-a240-03f3637dc400)
+
+
