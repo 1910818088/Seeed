@@ -1,157 +1,154 @@
 项目概述
-# ESP32-S3 智能环境监测系统
-此项目利用 Arduino IDE 开发环境，具体使用 DHT11 温湿度传感器采集温湿度数据，通过 OLED 显示屏实时展示数据，同时利用 WiFi 连接网络，经 MQTT 协议将数据上传至阿里云 IoT 平台。
-![image](https://github.com/user-attachments/assets/2147c8ee-82c6-465c-915a-eda8201e4c69)
+# ESP32-S3 环境监测与远程控制系统
+本项目是基于ESP32的多功能环境监测与控制系统，集成温湿度传感、光照检测、OLED显示和物联网通信功能。通过连接阿里云IoT平台，实现环境数据的实时上报和远程设备控制。系统每5秒上报传感器数据，并支持云端指令控制LED开关。
 
-一、硬件要求
+## 主要功能
+- 🌡️ **温湿度监测**：DHT11传感器实时采集环境温湿度
+- 🌞 **光照检测**：光敏电阻模块监测环境光照强度（模拟值+等级判断）
+- 📺 **OLED显示**：SSD1306屏幕实时显示传感器数据及设备状态
+- 🖲️ **远程控制**：支持通过MQTT指令控制LED开关（LightSwitch字段）
+- ☁️ **云端连接**：数据上报至阿里云IoT平台（遵循物模型规范）
+- 🔄 **自动重连**：具备WiFi/MQTT断线自动重连机制
 
-1.开发板：Xiao ESP32 S3，体积小巧，易于集成到各种应用场景中。
+## 硬件要求
+| 组件               | 型号/参数          |
+|--------------------|-------------------|
+| 主控板             | ESP32-S3系列开发板 |
+| 温湿度传感器       | DHT11             |
+| 光敏模块           | 模拟输出型         |
+| OLED显示屏         | SSD1306 128x32    |
+| LED模块            | 普通LED（带限流电阻）|
+| 连接线             | 杜邦线若干         |
+
+## 开发板介绍
+Xiao-ESP32-S3，体积小巧，易于集成到各种应用场景中。
 
 获取链接：https://www.seeedstudio.com/catalogsearch/result/?q=ESP32S3
 
-产品图示：![image](https://github.com/user-attachments/assets/71429a45-5f00-4107-9c78-bbb89a7747cc)
+产品图示：![image](https://github.com/user-attachments/assets/84304c53-8858-4781-a13b-809273d7295f)
 
 使用介绍：https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/
 
-2.温湿度传感器：DHT11，连接到开发板的 D8 引脚。
+## 软件依赖
+- [DHT Sensor Library](https://github.com/adafruit/DHT-sensor-library)
+- [Adafruit SSD1306](https://github.com/adafruit/Adafruit_SSD1306)
+- [PubSubClient](https://github.com/knolleary/pubsubclient)
+- [ArduinoJSON](https://github.com/bblanchon/ArduinoJson)
+- WiFi.h 提供Wi-Fi通信功能(内置库)
+- Wire.h 提供 I2C 通信功能(内置库)。
+
+安装方法：通过Arduino IDE库管理器搜索安装
+
+## 功能详解
+1.环境监测模块
+- 温湿度采集：通过DHT11传感器获取温度（摄氏度）和湿度（百分比）
+- 体感温度计算：使用DHT库内置算法计算热指数
+- 光照强度检测：
+- 采集0-1023的模拟值
+- 通过阈值判断实现三级光照等级：
+  - 黑暗（>4000）
+  - 明亮（1000-4000）
+  - 强光（<1000）
 
-获取链接：https://www.seeedstudio.com/Grove-Temperature-Humidity-Sensor-DHT11.html
+2.显示系统
+- OLED显示屏实时显示：
+- 当前温度（T: xx.xC）
+- 当前湿度（H: xx%）
+- 光照强度值（L: xxxx）
+- 光照等级（Dark/Bright/Glaring）
+- LED状态（ON/OFF）
 
-产品图示：![image](https://github.com/user-attachments/assets/54fb0083-8472-4ef7-a465-7c5f4b250530)
+3.网络通信
+- WiFi连接：自动连接指定SSID的WiFi网络
+- MQTT通信：
+- 云端：阿里云IoT平台
+  - 发布主题：/sys/gmsc1t6K6WG/Seeed/thing/event/property/post
+  - 数据格式：符合阿里云物模型规范的JSON数据包
 
+4.远程控制
+支持通过MQTT消息实现LED远程控制：
+  - 开灯指令：包含"LightSwitch":1的JSON消息
+  - 关灯指令：包含"LightSwitch":0的JSON消息
 
-使用介绍：https://wiki.seeedstudio.com/Grove-TemperatureAndHumidity_Sensor/
+## 代码结构说明
+1.库文件
 
-3. OLED显示屏：128x32 分辨率的 SSD1306 （若无可用以下型号代替），通过 I2C 接口连接。
+![image](https://github.com/user-attachments/assets/4d742ee1-c9b2-44cc-925f-a6531fd9048c)
 
-获取链接：https://www.seeedstudio.com/Grove-OLED-Display-0-66-SSD1306-v1-0-p-5096.html
+2.定义&配置
 
-产品图示：![image](https://github.com/user-attachments/assets/ea48e5d8-9971-4638-b3b3-ef3133eb34be)
+![image](https://github.com/user-attachments/assets/e04a0167-3fff-42fa-aa0d-7f5d0b229ee6)
 
-使用介绍：https://wiki.seeedstudio.com/Grove-OLED-Display-0.66-SSD1306_v1.0/
+3.setup()函数
 
-4.接线：![image](https://github.com/user-attachments/assets/ee1a4201-64f2-4937-b5dd-f127a3408875)
+![image](https://github.com/user-attachments/assets/23edfaf9-cf63-428e-8b0e-baf8d5fbdfaf)
 
-5.其他：笔记本一台、Arduino IDE软件、USB-TypeC数据线一根、面包板1个、线材若干。
+4.loop()函数
 
-二、软件依赖
+![image](https://github.com/user-attachments/assets/bb515dd1-8b78-4f22-b85e-c3a6443fc62a)
 
-代码中使用了多个库，你需在 Arduino IDE 中安装这些库：
+5.WiFi连接函数
 
-①DHT：用于读取 DHT11 传感器的数据。
+![image](https://github.com/user-attachments/assets/1c62b268-b7bb-4b39-9abf-bc78d9df6696)
 
-②Wire：提供 I2C 通信功能。
+6.MQTT连接函数
 
-③WiFi：支持开发板连接 WiFi 网络。
+![image](https://github.com/user-attachments/assets/b13b96d1-1ad3-404b-9948-cfb03a68640f)
 
-④ArduinoJson：用于处理 JSON 数据。
+7.接收消息回调函数
 
-⑤PubSubClient：实现 MQTT 协议通信。
+![image](https://github.com/user-attachments/assets/a7cd64e7-4d5d-4aec-9da7-8528528c3fb5)
 
-⑥Adafruit_GFX 和 Adafruit_SSD1306：用于控制 OLED 显示屏。
+8.MQTT重连服务函数
 
-三、配置步骤
+![image](https://github.com/user-attachments/assets/4018f955-1875-4154-b4d2-08901755ad81)
 
-1.WiFi 配置：
+9.数据采集&上报函数
 
-在代码里找到 ssid 和 password 变量，把它们修改成你的 WiFi 网络名称和密码。
+![image](https://github.com/user-attachments/assets/ac3b8bfb-22a3-4386-906a-8007cda1a4ef)
 
-const char* ssid = "你的WiFi名称";
+## 数据采集与处理
+采样频率：每5秒自动上传一次传感器数据
 
-const char* password = "你的WiFi密码";
+数据内容：
+{
+ 
+  "id": 123456789,
+  
+  "version": "1.0",
+  
+  "params": {
+  
+    "CurrentHumidity": 45.0,
+    
+    "CurrentTemperature": 25.0,
+    
+    "CurrentheatIndex": 26.5,
+    
+    "CurrentrawValue": 3000,
+    
+    "CurrentlightLevel": "明亮",
+    
+    "LightSwitch": 1
+    
+  }
+  
+}
 
-2.阿里云 IoT 配置：
+## 适用场景
+1.智能家居：实时监测室内温湿度，为智能家居系统提供数据支持，实现自动调节空调、加湿器等设备。
 
-要在阿里云 IoT 平台创建产品和设备，获取对应的 PRODUCT_KEY、DEVICE_NAME 和 DEVICE_SECRET，并更新代码中的相关变量。
+2.农业大棚：监测大棚内的温湿度环境，帮助农民及时调整种植环境，提高农作物的产量和质量。
 
-#define PRODUCT_KEY "你的产品密钥"
+3.工业环境：对工业生产环境中的温湿度进行监测，确保生产过程的稳定性和产品质量。
 
-#define DEVICE_NAME "你的设备名称"
-
-#define DEVICE_SECRET "你的设备密钥"
-
-3.MQTT 配置：
-
-依据阿里云 IoT 平台的设置，更新 mqttServer、clientId、username 和 passwordStr。
-
-const char* mqttServer = "你的MQTT服务器地址";
-
-String clientId = "你的客户端ID";
-
-String username = "你的用户名";
-
-String passwordStr = "你的MQTT密码";
-
-四、函数功能
-
-1.setup() 函数：
-
-①初始化串口通信、DHT11 传感器和 OLED 显示屏。
-
-②显示初始信息。
-
-③连接 WiFi 网络和阿里云 MQTT 服务器。
-
-2.loop() 函数：
-
-①检查 MQTT 连接状况，若断开则尝试重新连接。
-
-②每 5 秒读取一次 DHT11 传感器的数据，将数据显示在 OLED 上，并通过 MQTT 协议
-
-发布到阿里云 IoT 平台。
-
-3.connectWiFi() 函数：
-
-①尝试连接到指定的 WiFi 网络。
-
-4.connectAliyunMQTT() 函数：
-
-①配置 MQTT 服务器和回调函数。
-
-5.callback() 函数：
-
-①处理接收到的 MQTT 消息。
-
-6.reconnect() 函数：
-
-①尝试重新连接到 MQTT 服务器。
-
-7.publishSensorData() 函数：
-
-①读取 DHT11 传感器的温湿度数据。
-
-②在 OLED 显示屏上显示温湿度数据。
-
-③把数据封装成 JSON 格式，通过 MQTT 协议发布到阿里云 IoT 平台。
-
-五、云平台配置
-
-1.云平台链接：https://iot.console.aliyun.com/product
-
-2.创建产品和添加设备获取配置信息
-
-![image](https://github.com/user-attachments/assets/b6b369ac-28bf-4cab-9d62-2240c57e86dd)
-
-3.添加传感器的参数
-
-![image](https://github.com/user-attachments/assets/6ad41cd3-9e86-41ba-bf93-4e396699c386)
-
-六、适用场景
-
-智能家居：实时监测室内温湿度，为智能家居系统提供数据支持，实现自动调节空调、加湿器等设备。
-
-农业大棚：监测大棚内的温湿度环境，帮助农民及时调整种植环境，提高农作物的产量和质量。
-
-工业环境：对工业生产环境中的温湿度进行监测，确保生产过程的稳定性和产品质量。
-
-七、后续展望
-
+## 后续展望
 后续可以考虑增加更多的传感器，如光照传感器、气压传感器等，采集更丰富的环境数据。同时，优化数据处理和展示方式，提供更个性化的数据分析服务，同时还可以基于 Ardroid Studio 设计一个简易的 APP 来实现设备的远程数据传输与控制。
 
-八、注意事项
+## 最终效果
 
-要保证硬件连接无误，特别是 DHT11 传感器和 OLED 显示屏的引脚连接。
+![image](https://github.com/user-attachments/assets/aa5f8339-4855-4725-925f-4b3588867850)
 
-若使用的是不同的开发板，可能需要调整引脚定义。
+![c3aa19b6a91fd22376228ad3bc10d80](https://github.com/user-attachments/assets/ff8038c2-7a15-466f-a39a-52ad69189888)
 
-要确保阿里云 IoT 平台的设备配置与代码中的配置一致。
+https://github.com/user-attachments/assets/91b46f3c-7751-4cf4-8a8b-b43003999870
