@@ -62,7 +62,7 @@ void setup() {
 
   display.clearDisplay();               //清空屏幕缓冲区
   display.setTextColor(SSD1306_WHITE);  //白色文本
-  display.setTextSize(0.5);               //切换到大字体
+  display.setTextSize(0.5);             //切换到大字体
   display.setCursor(30,12);             //调整位置
   display.println("Seeed Studio");      //输出字符
   display.display();                    //将缓冲区内容输出到屏幕
@@ -167,26 +167,26 @@ void publishSensorData() {
   display.setTextSize(1);
   display.setCursor(0,0);
   display.print("T: ");
-  display.print(Temperature);      //显示温度
+  display.print(Temperature);          //显示温度
   display.println("C");
 
   display.setTextSize(1);
   display.setCursor(60,0);
   display.print("H: ");
-  display.print(Humidity);         //显示湿度
+  display.print(Humidity);            //显示湿度
   display.println("%");
 
   display.setTextSize(1);
   display.setCursor(0,12);
   display.print("L: ");
-  display.print(rawValue);         //显示光敏模块模拟值
+  display.print(rawValue);           //显示光敏模块模拟值
 
   display.setTextSize(1);
   display.setCursor(60,12);
   display.print("L: ");
   //光照等级判断
   String lightLevel;
-  if (rawValue > DARK_THRESHOLD) { //显示光照等级
+  if (rawValue > DARK_THRESHOLD) {   //显示光照等级
     lightLevel = "黑暗";
     display.print("Dark");      
   } else if (rawValue < BRIGHT_THRESHOLD) {
@@ -200,7 +200,7 @@ void publishSensorData() {
   display.setTextSize(1);
   display.setCursor(0,24);
   display.print("S: ");
-  if(digitalRead(LED_PIN)==1){   //显示开关状态
+  if(digitalRead(LED_PIN)==1){      //显示开关状态
     display.print("ON");
   }else{
     display.print("OFF");
