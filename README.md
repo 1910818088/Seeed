@@ -146,6 +146,13 @@ Xiao-ESP32-S3，体积小巧，易于集成到各种应用场景中。
 后续可以考虑增加更多的传感器，如光照传感器、气压传感器等，采集更丰富的环境数据。同时，优化数据处理和展示方式，提供更个性化的数据分析服务，同时还可以基于 Ardroid Studio 设计一个简易的 APP 来实现设备的远程数据传输与控制。
 
 ## 最终效果
-![image](https://github.com/user-attachments/assets/87d4e997-258c-42d8-94d4-e0cee2fc98f6)
 
-![996eace5571f4a2670f595187a7b38f](https://github.com/user-attachments/assets/5d370783-b648-4e9e-a240-03f3637dc400)
+![image](https://github.com/user-attachments/assets/aa5f8339-4855-4725-925f-4b3588867850)
+
+![c3aa19b6a91fd22376228ad3bc10d80](https://github.com/user-attachments/assets/ff8038c2-7a15-466f-a39a-52ad69189888)
+
+https://github.com/user-attachments/assets/91b46f3c-7751-4cf4-8a8b-b43003999870
+
+
+
+
